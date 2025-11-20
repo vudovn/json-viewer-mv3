@@ -1,6 +1,6 @@
 ![JSONViewer Logo](https://raw.githubusercontent.com/tulios/json-viewer/master/logo.png)
 
-# JSON Viewer
+# JSON Viewer MV3
 
 ![screenshot](https://raw.githubusercontent.com/tulios/json-viewer/master/screenshot.png)
 
