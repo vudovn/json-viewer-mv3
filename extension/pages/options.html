@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link type="text/css" rel="stylesheet" href="../assets/options.css">
+    <script type="text/javascript" src="../assets/options.js"></script>
+    <title>Options - JSON Viewer</title>
+    <style>
+      /* Modern UI with pure CSS - no Tailwind CDN needed */
+      :root {
+        /* Primary Color - Single main color */
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --primary-light: #a5b4fc;
+        --primary-bg: #eef2ff;
+        
+        /* Gray Scale */
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--gray-50);
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        color: var(--gray-800);
+        padding: 2rem 1.5rem;
+      }
+
+      .page-container {
+        max-width: 80rem;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--gray-200);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+      }
+
+      .card-body {
+        padding: 1.5rem;
+      }
+
+      .card-body-lg {
+        padding: 2rem;
+      }
+
+      /* Header */
+      .header-flex {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        background: var(--primary);
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+
+      .header-content h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.25rem;
+      }
+
+      .header-content p {
+        color: var(--gray-500);
+        font-size: 0.875rem;
+      }
+
+      /* Section Headers */
+      .section-header {
+        margin-bottom: 1rem;
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 0.5rem;
+      }
+
+      .section-title::before {
+        content: attr(data-icon);
+        margin-right: 0.5rem;
+      }
+
+      .section-description {
+        color: var(--gray-600);
+        font-size: 0.875rem;
+      }
+
+      /* Select Input */
+      .select-wrapper {
+        position: relative;
+      }
+
+      .select-wrapper select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 2px solid var(--gray-300);
+        border-radius: 0.5rem;
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+        outline: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+      }
+
+      .select-wrapper select:hover {
+        border-color: var(--primary);
+      }
+
+      .select-wrapper select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-bg);
+      }
+
+      /* Collapsible Details */
+      details {
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        cursor: pointer;
+        background: var(--primary-bg);
+        border: 1px solid var(--primary-light);
+      }
+
+      details summary {
+        font-weight: 600;
+        user-select: none;
+        outline: none;
+        transition: color 0.2s;
+        color: var(--primary-hover);
+      }
+
+      details summary:hover {
+        color: var(--primary);
+      }
+
+      details summary::before {
+        content: "📖 ";
+      }
+
+      .info-list {
+        margin-top: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+      }
+
+      .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .info-code {
+        font-family: 'Courier New', monospace;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+        white-space: nowrap;
+        flex-shrink: 0;
+        background: white;
+        color: var(--primary);
+        border: 1px solid var(--primary-light);
+      }
+
+      .info-text {
+        color: var(--gray-700);
+        line-height: 1.5;
+      }
+
+      /* Textareas */
+      textarea {
+        width: 100%;
+        font-family: 'Courier New', monospace;
+        font-size: 0.875rem;
+        border: 2px solid var(--gray-300);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        background: var(--gray-50);
+        transition: all 0.2s;
+        outline: none;
+        resize: vertical;
+        min-height: 150px;
+      }
+
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-bg);
+        background: white;
+      }
+
+      /* Action Bar */
+      .action-bar-sticky {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+      }
+
+      .action-bar-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .version-link {
+        font-size: 0.875rem;
+        color: var(--gray-500);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+
+      .version-link:hover {
+        color: var(--primary);
+      }
+
+      .button-group {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      button {
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      button:active {
+        transform: scale(0.95);
+      }
+
+      button#reset {
+        background: var(--gray-100);
+        color: var(--gray-700);
+        border: 2px solid var(--gray-300);
+      }
+
+      button#reset:hover {
+        background: var(--gray-200);
+        border-color: var(--gray-400);
+      }
+
+      /* button#reset::before {
+        content: "🔄";
+      } */
+
+      button#save {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      button#save:hover {
+        background: var(--primary-hover);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+/* 
+      button#save::before {
+        content: "💾";
+      } */
+
+      kbd {
+        padding: 0.125rem 0.5rem;
+        background: var(--gray-200);
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-family: 'Courier New', monospace;
+      }
+
+      /* Responsive */
+      @media (max-width: 640px) {
+        body {
+          padding: 1rem;
+        }
+
+        .card-body-lg {
+          padding: 1.5rem;
+        }
+
+        .section-title {
+          font-size: 1.25rem;
+        }
+
+        .action-bar-content {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .button-group {
+          flex-direction: column;
+        }
+
+        button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="page-container">
+      <!-- Header -->
+
+      <form id="options">
+        <!-- Theme Section -->
+        <div class="card">
+          <div class="card-body">
+            <div class="section-header">
+              <h2 class="section-title" data-icon="🎨">Theme</h2>
+              <p class="section-description">Choose your favorite color theme</p>
+            </div>
+
+            <div class="select-wrapper" style="margin-bottom: 10px;">
+              <select id="themes" name="theme"></select>
+            </div>
+            <textarea id="themes-example" name="themes-example" disabled="disabled" style="display: none;"></textarea>
+          </div>
+        </div>
+
+        <!-- Add-ons Section -->
+        <div class="card">
+          <div class="card-body">
+            <div class="section-header">
+              <h2 class="section-title" data-icon="⚙️">Add-ons</h2>
+              <p class="section-description">Edit advanced configuration</p>
+            </div>
+
+            <!-- Collapsible Info -->
+            <details>
+              <summary>View options guide</summary>
+              <div class="info-list">
+                <div class="info-item">
+                  <span class="info-code">prependHeader</span>
+                  <span class="info-text">Display header with URL and timestamp (boolean). Default: true</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">maxJsonSize</span>
+                  <span class="info-text">Value in kbytes (integer). Default: 400</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">alwaysFold</span>
+                  <span class="info-text">Collapse from second level. Unfold all button appears if true (boolean). Default: false</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">alwaysRenderAllContent</span>
+                  <span class="info-text">Disable custom search and render all content. ⚠️ <strong>Large files will have significant performance reduction</strong> (boolean). Default: false</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">sortKeys</span>
+                  <span class="info-text">Sort object by key (boolean). Default: false</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">clickableUrls</span>
+                  <span class="info-text">Make URLs clickable (boolean). Default: true</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">wrapLinkWithAnchorTag</span>
+                  <span class="info-text">Add URLs as anchor tag (boolean). Default: false</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">openLinksInNewWindow</span>
+                  <span class="info-text">Open URLs in new window/tab (boolean). Default: true</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">autoHighlight</span>
+                  <span class="info-text">Auto highlight JSON from the start. When false, can still highlight from raw page (boolean). Default: true</span>
+                </div>
+              </div>
+            </details>
+
+            <textarea id="addons" name="addons" style="display: none;"></textarea>
+          </div>
+        </div>
+
+        <!-- Structure Section -->
+        <div class="card">
+          <div class="card-body">
+            <div class="section-header">
+              <h2 class="section-title" data-icon="📐">Structure</h2>
+              <p class="section-description">JSON display format</p>
+            </div>
+
+            <details>
+              <summary>View options guide</summary>
+              <div class="info-list">
+                <div class="info-item">
+                  <span class="info-code">tabSize</span>
+                  <span class="info-text">Default: 2</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">indentCStyle</span>
+                  <span class="info-text">Default: false</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-code">showArraySize</span>
+                  <span class="info-text">Default: false</span>
+                </div>
+              </div>
+            </details>
+
+            <textarea id="structure" name="structure" style="display: none;"></textarea>
+          </div>
+        </div>
+
+        <!-- Custom Style Section -->
+        <div class="card">
+          <div class="card-body">
+            <div class="section-header">
+              <h2 class="section-title" data-icon="🎨">Custom Style</h2>
+              <p class="section-description">This field accepts CSS code. Use <kbd>Ctrl + Space</kbd> for autocomplete!</p>
+            </div>
+
+            <textarea id="style" name="style" style="display: none;"></textarea>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card action-bar-sticky">
+          <div class="card-body">
+            <div class="action-bar-content">
+              <a class="version version-link" target="_blank"></a>
+              <div class="button-group">
+                <button type="button" id="reset">Reset to defaults</button>
+                <button type="button" id="save">Save</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </body>
+</html>

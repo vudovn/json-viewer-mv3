@@ -1,0 +1,44 @@
+{
+  "name": "JSON Viewer",
+  "version": "0.19.0",
+  "manifest_version": 3,
+  "author": "Tulio Ornelas <ornelas.tulio@gmail.com>",
+  "description": "The most beautiful and customizable JSON/JSONP highlighter that your eyes have ever seen. Open source at https://goo.gl/fmphc7",
+  "homepage_url": "https://github.com/tulios/json-viewer",
+  "minimum_chrome_version": "88",
+  "icons": {
+       "128": "icons/128.png",
+       "32": "icons/32.png",
+       "16": "icons/16.png"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/viewer.css",
+        "assets/viewer-alert.css",
+        "pages/options.html",
+        "pages/omnibox.html"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "offline_enabled": true,
+  "omnibox": { "keyword" : "json-viewer" },
+  "options_page": "pages/options.html",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["assets/viewer.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "background": {
+    "service_worker": "assets/background.js"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}
